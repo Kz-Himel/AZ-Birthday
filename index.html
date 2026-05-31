@@ -42,6 +42,7 @@ body::before{
 
 canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;}
 #sc{z-index:1;}
+#nc{z-index:2;}
 #cc{z-index:90;}
 
 /* ── SECTIONS ── */
@@ -332,6 +333,14 @@ section{
   padding:0.4rem;touch-action:manipulation;
 }
 
+.from-name{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:clamp(1rem,3.5vw,1.15rem);
+  color:var(--gold);
+  margin-bottom:2rem;
+  opacity:0.85;
+}
+
 /* ── FLOATING HEARTS ── */
 #hc{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden;}
 .heart{position:absolute;bottom:-60px;opacity:0;animation:riseHeart linear forwards;}
@@ -369,6 +378,7 @@ footer span{color:var(--pink);}
 <body>
 
 <canvas id="sc"></canvas>
+<canvas id="nc"></canvas>
 <canvas id="cc"></canvas>
 <div id="hc"></div>
 
@@ -427,7 +437,7 @@ footer span{color:var(--pink);}
       <p>Today the universe celebrates the day you were born — and it has every reason to. You came into this world and made it warmer, kinder and more beautiful just by being in it.</p>
       <p>Loving you is the greatest privilege of my life. You are not just the person I chose — you are the person I would choose again, in every lifetime, without a single hesitation.</p>
       <p>May today bring you all the magic and joy you deserve. And may you always know how deeply, endlessly, completely loved you are. 💜</p>
-      <em class="letter-sign">— Yours, forever 🌙</em>
+      <em class="letter-sign">— With all my love, "Your Sona Pakhi 🌙</em>
     </div>
   </div>
 </section>
@@ -439,6 +449,7 @@ footer span{color:var(--pink);}
   </div>
   <span class="cake-big rev">🎂</span>
   <p class="wish-txt rev">Close your eyes, make a wish — the person who loves you most is already making it come true.</p>
+  <p class="from-name rev">— From Your Loving Husband "Khayruzzaman Himel", with endless love 💜</p>
   <button class="blow-btn rev" onclick="celebrate(this)">
     🕯️ &nbsp; Blow the Candles
   </button>
@@ -454,7 +465,7 @@ footer span{color:var(--pink);}
     <p class="popup-msg">May every wish you hold in your heart come true today and always. You deserve all the love, joy and magic this world has to give.</p>
     <span class="popup-stars">🌟 ✨ 💛 ✨ 🌟</span>
     <div class="popup-textarea-wrap">
-      <label class="popup-textarea-label">💌 Send him a message</label>
+      <label class="popup-textarea-label">💌 Send me a message</label>
       <textarea class="popup-textarea" id="loveMsg" placeholder="Write what's in your heart... 💜" rows="3"></textarea>
     </div>
     <button class="popup-send" onclick="sendWhatsApp()">💚 &nbsp; Send on WhatsApp</button>
@@ -462,7 +473,7 @@ footer span{color:var(--pink);}
   </div>
 </div>
 
-<footer>Made with <span>♥</span> just for you · Happy Birthday, My Love 🌙</footer>
+<footer>Made with <span>♥</span> by Your Loving Husband "Khayruzzaman Himel", just for you · Happy Birthday, My Love 🌙</footer>
 
 <script>
 // ── STARS ──
@@ -482,6 +493,80 @@ function drawS(){
 }
 rsz();mkStars();drawS();
 window.addEventListener('resize',()=>{rsz();mkStars();});
+
+// ── FLOATING NAME ANIMATION ──
+// 👇 REPLACE  WIFE_NAME_HERE  with your wife's name
+const WIFE_NAME = "Abiha Zaman";
+
+const nc=document.getElementById('nc'),nctx=nc.getContext('2d');
+let nameParticles=[];
+function rszN(){nc.width=window.innerWidth;nc.height=window.innerHeight;}
+rszN();
+window.addEventListener('resize',rszN);
+
+function spawnName(){
+  const fontSize=Math.random()*28+18;
+  const colors=['rgba(212,184,240,','rgba(240,208,128,','rgba(240,160,200,','rgba(180,140,255,'];
+  const c=colors[Math.floor(Math.random()*colors.length)];
+  nameParticles.push({
+    x:Math.random()*nc.width,
+    y:nc.height+60,
+    fontSize,
+    opacity:0,
+    alpha:Math.random()*0.18+0.06,
+    vy:-(Math.random()*0.35+0.15),
+    vx:(Math.random()-0.5)*0.3,
+    wobble:Math.random()*Math.PI*2,
+    wobbleSpeed:Math.random()*0.02+0.008,
+    color:c,
+    rot:(Math.random()-0.5)*0.3,
+    rotV:(Math.random()-0.5)*0.002,
+    scale:1,
+    life:0,
+    maxLife:Math.random()*400+350
+  });
+}
+
+function drawNames(){
+  nctx.clearRect(0,0,nc.width,nc.height);
+  nameParticles.forEach(p=>{
+    p.life++;
+    p.y+=p.vy;
+    p.x+=p.vx+Math.sin(p.wobble)*0.4;
+    p.wobble+=p.wobbleSpeed;
+    p.rot+=p.rotV;
+    // fade in and out
+    if(p.life<60) p.opacity=p.life/60;
+    else if(p.life>p.maxLife-80) p.opacity=Math.max(0,(p.maxLife-p.life)/80);
+    else p.opacity=1;
+
+    nctx.save();
+    nctx.translate(p.x,p.y);
+    nctx.rotate(p.rot);
+    nctx.globalAlpha=p.alpha*p.opacity;
+    nctx.font=`300 ${p.fontSize}px 'Playfair Display', serif`;
+    nctx.fillStyle=p.color+'1)';
+    nctx.textAlign='center';
+    // soft glow
+    nctx.shadowColor=p.color+'0.6)';
+    nctx.shadowBlur=18;
+    nctx.fillText(WIFE_NAME,0,0);
+    nctx.restore();
+  });
+  nameParticles=nameParticles.filter(p=>p.life<p.maxLife&&p.y>-100);
+  requestAnimationFrame(drawNames);
+}
+
+// spawn a name every 1.8 seconds
+setInterval(spawnName, 1800);
+// pre-fill a few right away at random heights
+for(let i=0;i<6;i++){
+  setTimeout(()=>{
+    const p={x:Math.random()*nc.width,y:Math.random()*nc.height,fontSize:Math.random()*28+18,opacity:0,alpha:Math.random()*0.16+0.05,vy:-(Math.random()*0.35+0.15),vx:(Math.random()-0.5)*0.3,wobble:Math.random()*Math.PI*2,wobbleSpeed:Math.random()*0.02+0.008,color:['rgba(212,184,240,','rgba(240,208,128,','rgba(240,160,200,','rgba(180,140,255,'][Math.floor(Math.random()*4)],rot:(Math.random()-0.5)*0.3,rotV:(Math.random()-0.5)*0.002,scale:1,life:60,maxLife:Math.random()*400+400};
+    nameParticles.push(p);
+  },i*300);
+}
+drawNames();
 
 // ── TOUCH SPARKLES ──
 let lastSp=0;
@@ -591,8 +676,7 @@ function animConf(){
 }
 
 // ── POPUP ──
-// 👇 REPLACE YOUR_NUMBER_HERE with your WhatsApp number (country code, no + or spaces)
-// Example for Bangladesh +8801712345678  →  write: 8801712345678
+
 const MY_WHATSAPP = "8801307161360";
 
 function sendWhatsApp() {
