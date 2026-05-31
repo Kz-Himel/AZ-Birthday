@@ -681,8 +681,27 @@ const MY_WHATSAPP = "8801307161360";
 
 function sendWhatsApp() {
   const typed = document.getElementById('loveMsg').value.trim();
-  const msg = typed.length > 0 ? typed : "💜 Thank you my love! I saw your beautiful birthday gift. I love you so much! 🌙✨";
-  window.open("https://wa.me/" + MY_WHATSAPP + "?text=" + encodeURIComponent(msg), "_blank");
+
+  const msg = typed.length > 0
+    ? typed
+    : "💜 Thank you my love! I saw your beautiful birthday gift. I love you so much! 🌙✨";
+
+  const encodedMsg = encodeURIComponent(msg);
+
+  // Mobile app open
+  const appUrl = `whatsapp://send?phone=${MY_WHATSAPP}&text=${encodedMsg}`;
+
+  // Fallback browser link
+  const webUrl = `https://wa.me/${MY_WHATSAPP}?text=${encodedMsg}`;
+
+  // First try app
+  window.location.href = appUrl;
+
+  // If app not working browser version open 
+  setTimeout(() => {
+    window.open(webUrl, "_blank");
+  }, 1000);
+
   document.getElementById('pop').classList.remove('show');
 }
 
